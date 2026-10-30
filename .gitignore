@@ -1,0 +1,22 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+*.tfvars
+*.tfvars.json
+
+# Local environment secrets
+.env
+.env.*
+!.env.example
+
+# Terraform plan artifacts
+*.tfplan
+
+# Local macOS and downloaded installer artifacts
+.DS_Store
