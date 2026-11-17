@@ -65,7 +65,12 @@ jobs:
       - name: Bootstrap ECR repository if needed
         working-directory: terraform/step2-agentcore
         run: |
-          terraform state list > "$RUNNER_TEMP/step2-resources.txt"
+          terraform state pull > "$RUNNER_TEMP/step2-state.json"
+          if [ -s "$RUNNER_TEMP/step2-state.json" ]; then
+            terraform state list > "$RUNNER_TEMP/step2-resources.txt"
+          else
+            : > "$RUNNER_TEMP/step2-resources.txt"
+          fi
           if ! grep -Fxq 'aws_ecr_repository.mcp_server' "$RUNNER_TEMP/step2-resources.txt"; then
             terraform apply -auto-approve -input=false -lock-timeout=5m -target=aws_ecr_repository.mcp_server
           fi
