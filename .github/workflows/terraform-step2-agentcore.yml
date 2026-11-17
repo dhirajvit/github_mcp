@@ -53,7 +53,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          allowed-account-ids: "365957109972"
+
+      - name: Verify AWS account
+        run: |
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          if [ "$account_id" != "365957109972" ]; then
+            echo "Unexpected AWS account: $account_id" >&2
+            exit 1
+          fi
 
       - name: Initialize and validate Terraform
         working-directory: terraform/step2-agentcore
@@ -62,18 +69,10 @@ jobs:
           terraform init -input=false
           terraform validate
 
-      - name: Bootstrap ECR repository if needed
+      - name: Ensure ECR repository exists
         working-directory: terraform/step2-agentcore
         run: |
-          terraform state pull > "$RUNNER_TEMP/step2-state.json"
-          if [ -s "$RUNNER_TEMP/step2-state.json" ]; then
-            terraform state list > "$RUNNER_TEMP/step2-resources.txt"
-          else
-            : > "$RUNNER_TEMP/step2-resources.txt"
-          fi
-          if ! grep -Fxq 'aws_ecr_repository.mcp_server' "$RUNNER_TEMP/step2-resources.txt"; then
-            terraform apply -auto-approve -input=false -lock-timeout=5m -target=aws_ecr_repository.mcp_server
-          fi
+          terraform apply -auto-approve -input=false -lock-timeout=5m -target=aws_ecr_repository.mcp_server
 
       - name: Set image details
         working-directory: terraform/step2-agentcore

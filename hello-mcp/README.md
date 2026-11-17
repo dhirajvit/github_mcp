@@ -96,8 +96,8 @@ not trigger a Runtime update.
 The `Terraform Step2 AgentCore` workflow automatically deploys pushes to
 `main` that change the server, requirements, Docker build context settings,
 step2 Terraform, or the workflow itself. It also supports manual execution
-from the repository's Actions tab. It tests the server, creates the ECR
-repository if it is not in Terraform state, builds and pushes an ARM64 image
+from the repository's Actions tab. It tests the server, uses a targeted apply
+to ensure the ECR repository exists, builds and pushes an ARM64 image
 with a new tag for each run, and applies the complete step2 configuration.
 These applies are automatic and can create or change billable AWS resources.
 
