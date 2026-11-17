@@ -91,6 +91,30 @@ pass the new tag to both `terraform plan` and `terraform apply`. Replacing an
 image under the same tag does not change the Terraform configuration and does
 not trigger a Runtime update.
 
+## Deploy with GitHub Actions
+
+The `Terraform Step2 AgentCore` workflow automatically deploys pushes to
+`main` that change the server, requirements, Docker build context settings,
+step2 Terraform, or the workflow itself. It also supports manual execution
+from the repository's Actions tab. It tests the server, creates the ECR
+repository if it is not in Terraform state, builds and pushes an ARM64 image
+with a new tag for each run, and applies the complete step2 configuration.
+These applies are automatic and can create or change billable AWS resources.
+
+Configure the repository secrets `AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_ACCESS_KEY` for an identity in account `365957109972`. It needs
+permissions for the shared S3 state and lock, ECR image push, IAM roles and
+policies, and AgentCore Runtime. This is the same credential setup used by the
+step1 workflow; `GH_PAT` is not required by step2. Protect the `main` branch
+and restrict who may run the workflow. For production, prefer GitHub OIDC
+with a narrowly scoped AWS role over long-lived access keys.
+
+The workflow and local commands use the same S3 state and workspace. Do not
+run applies concurrently; S3 state locking protects individual Terraform
+operations, not the entire build-and-deploy sequence. To avoid a local apply
+unexpectedly reverting a CI deployment, supply its current image tag as
+`-var="image_tag=..."` when planning or applying locally.
+
 ## Invoke the deployed tool
 
 From `terraform/step2-agentcore`, use the AWS CLI to sign an MCP JSON-RPC
