@@ -16,6 +16,29 @@ variable "gateway_execution_role_name" {
   default     = "agentcore-gateway-execution"
 }
 
+variable "gateway_name" {
+  description = "Name of the MCP gateway"
+  type        = string
+  default     = "hello-mcp-gateway"
+}
+
+variable "gateway_jwt_discovery_url" {
+  description = "OIDC discovery URL for the gateway's inbound JWT authorizer"
+  type        = string
+  default     = "https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_vhI4pkJdI/.well-known/openid-configuration"
+}
+
+variable "gateway_jwt_allowed_clients" {
+  description = "OAuth client IDs allowed to call the gateway"
+  type        = set(string)
+  default     = ["5m57vc9jdrslraa3uaajkk1915"]
+
+  validation {
+    condition     = length(var.gateway_jwt_allowed_clients) > 0
+    error_message = "At least one allowed OAuth client ID is required."
+  }
+}
+
 variable "ecr_repository_name" {
   description = "ECR repository that holds the MCP server container image"
   type        = string

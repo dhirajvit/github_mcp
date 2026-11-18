@@ -12,8 +12,8 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      # aws_bedrockagentcore_agent_runtime was added in 6.17.0
-      version = ">= 6.17.0, < 7.0.0"
+      # Gateway MCP targets support IAM SigV4 signing starting in 6.48.0.
+      version = ">= 6.48.0, < 7.0.0"
     }
   }
 }
