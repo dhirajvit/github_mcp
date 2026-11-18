@@ -20,7 +20,7 @@ resource "aws_bedrockagentcore_gateway" "hello_mcp" {
   role_arn        = aws_iam_role.gateway_execution.arn
   protocol_type   = "MCP"
   authorizer_type = "CUSTOM_JWT"
- 
+
   authorizer_configuration {
     custom_jwt_authorizer {
       discovery_url   = var.gateway_jwt_discovery_url
